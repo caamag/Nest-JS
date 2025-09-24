@@ -6,17 +6,19 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Controller('/api/tasks')
 export class TasksController {
-  constructor(private readonly taskService: TasksService) {}
+  constructor(private taskService: TasksService) {}
 
   @Get()
-  getTasks() {
-    return this.taskService.listTasks();
+  getTasks(@Query() pagination: PaginationDto) {
+    return this.taskService.listTasks(pagination);
   }
 
   @Get(':id')
@@ -36,6 +38,6 @@ export class TasksController {
 
   @Delete(':id')
   deleteTask(@Param('id') id: string) {
-    return `Deletando task ${id}`;
+    return this.taskService.delete(Number(id));
   }
 }

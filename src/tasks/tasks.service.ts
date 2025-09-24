@@ -2,13 +2,19 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Injectable()
 export class TasksService {
   constructor(private prisma: PrismaService) {}
 
-  async listTasks() {
-    const allTasks = await this.prisma.task.findMany();
+  async listTasks(paginationDto: PaginationDto) {
+    const { limit = 100, offset = 0 } = paginationDto;
+
+    const allTasks = await this.prisma.task.findMany({
+      take: limit,
+      skip: offset,
+    });
     return allTasks;
   }
 
@@ -60,6 +66,27 @@ export class TasksService {
     return {
       message: 'Tarefa alterada com sucesso',
       data: taskUpdated,
+    };
+  }
+
+  async delete(id: number) {
+    const taskExist = await this.prisma.task.findFirst({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!taskExist)
+      throw new HttpException('Task selecionada não existe.', 404);
+
+    await this.prisma.task.delete({
+      where: {
+        id: id,
+      },
+    });
+
+    return {
+      message: 'Tarefa deletada com sucesso',
     };
   }
 }
