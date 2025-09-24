@@ -1,49 +1,65 @@
-import {
-  HttpCode,
-  HttpException,
-  HttpStatus,
-  Injectable,
-} from '@nestjs/common';
-import { Task } from './entities/entities.task';
+import { HttpException, Injectable } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
+import { PrismaService } from '../prisma/prisma.service';
+import { UpdateTaskDto } from './dto/update-task.dto';
 
 @Injectable()
 export class TasksService {
-  private tasks: Task[] = [
-    {
-      id: 1,
-      name: 'Aprender Nest JS',
-      description: 'Aprendendo backend',
-      completed: false,
-    },
-    {
-      id: 2,
-      name: 'Aprender Nest JS',
-      description: 'Aprendendo backend',
-      completed: false,
-    },
-  ];
+  constructor(private prisma: PrismaService) {}
 
-  listTasks() {
-    return this.tasks;
+  async listTasks() {
+    const allTasks = await this.prisma.task.findMany();
+    return allTasks;
   }
 
-  finJustOneTask(id: string) {
-    const task = this.tasks.find((task) => task.id === Number(id));
+  async finJustOneTask(id: number) {
+    const task = await this.prisma.task.findFirst({
+      where: {
+        id: id,
+      },
+    });
 
-    if (task) return task;
+    if (task?.name) return task;
     throw new HttpException('Nenhuma tarefa encontrada.', 404);
   }
 
-  createTask(body: CreateTaskDto) {
-    const newId = this.tasks.length + 1;
-    const newTask = {
-      id: newId,
-      completed: false,
-      ...body,
-    };
+  async createTask(body: CreateTaskDto) {
+    if (!body.description || !body.description) {
+      throw new HttpException('Descrição e nome são necessários', 400);
+    }
 
-    this.tasks.push(newTask);
+    const newTask = await this.prisma.task.create({
+      data: {
+        name: body.name,
+        description: body.description,
+        completed: false,
+      },
+    });
+
     return newTask;
+  }
+
+  async update(id: number, body: UpdateTaskDto) {
+    const findTask = await this.prisma.task.findFirst({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!findTask) {
+      throw new HttpException('Tarefa selecionada não existe', 404);
+    }
+
+    const taskUpdated = await this.prisma.task.update({
+      where: {
+        id: findTask.id,
+      },
+      data: body,
+    });
+
+    return {
+      message: 'Tarefa alterada com sucesso',
+      data: taskUpdated,
+    };
   }
 }

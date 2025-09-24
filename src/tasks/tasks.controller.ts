@@ -8,6 +8,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
+import { UpdateTaskDto } from './dto/update-task.dto';
 
 @Controller('/api/tasks')
 export class TasksController {
@@ -20,7 +21,7 @@ export class TasksController {
 
   @Get(':id')
   viewTask(@Param('id') id: string) {
-    return this.taskService.finJustOneTask(id);
+    return this.taskService.finJustOneTask(Number(id));
   }
 
   @Post()
@@ -29,8 +30,8 @@ export class TasksController {
   }
 
   @Patch(':id')
-  updateTask(@Param('id') id: string, @Body() body: any) {
-    return `Atualizando tarefa ${id}`;
+  updateTask(@Param('id') id: string, @Body() body: UpdateTaskDto) {
+    return this.taskService.update(Number(id), body);
   }
 
   @Delete(':id')
