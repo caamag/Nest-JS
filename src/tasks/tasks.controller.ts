@@ -7,10 +7,12 @@ import {
   Patch,
   Post,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { LoggerInterceptor } from 'src/common/interceptors/logger.interceptor';
 
 @Controller('/api/tasks')
 export class TasksController {
@@ -27,6 +29,7 @@ export class TasksController {
   }
 
   @Post()
+  @UseInterceptors(LoggerInterceptor)
   createTask(@Body() body: any) {
     return this.taskService.createTask(body);
   }
