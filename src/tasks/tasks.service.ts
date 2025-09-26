@@ -46,6 +46,7 @@ export class TasksService {
         name: body.name,
         description: body.description,
         completed: false,
+        userId: body.userId,
       },
     });
 

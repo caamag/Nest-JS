@@ -12,6 +12,11 @@ export class UsersService {
       where: {
         id: id,
       },
+      select: {
+        name: true,
+        email: true,
+        tasks: true,
+      },
     });
 
     if (!user) throw new HttpException('Nenhum usuário encontrado.', 404);
