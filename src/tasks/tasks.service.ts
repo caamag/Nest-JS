@@ -15,7 +15,10 @@ export class TasksService {
       take: limit,
       skip: offset,
     });
-    return allTasks;
+    return {
+      message: 'Tarefas encontradas',
+      data: allTasks,
+    };
   }
 
   async finJustOneTask(id: number) {
@@ -25,8 +28,12 @@ export class TasksService {
       },
     });
 
-    if (task?.name) return task;
-    throw new HttpException('Nenhuma tarefa encontrada.', 404);
+    if (!task) throw new HttpException('Nenhuma tarefa encontrada.', 404);
+
+    return {
+      message: 'Tarefa encontrada',
+      data: task,
+    };
   }
 
   async createTask(body: CreateTaskDto) {
@@ -42,7 +49,10 @@ export class TasksService {
       },
     });
 
-    return newTask;
+    return {
+      message: 'Tarefa criada com sucesso.',
+      data: newTask,
+    };
   }
 
   async update(id: number, body: UpdateTaskDto) {
