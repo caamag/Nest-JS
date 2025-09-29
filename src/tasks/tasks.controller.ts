@@ -14,6 +14,7 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { LoggerInterceptor } from 'src/common/interceptors/logger.interceptor';
 
+@UseInterceptors(LoggerInterceptor)
 @Controller('/api/tasks')
 export class TasksController {
   constructor(private taskService: TasksService) {}
@@ -29,7 +30,6 @@ export class TasksController {
   }
 
   @Post()
-  @UseInterceptors(LoggerInterceptor)
   createTask(@Body() body: any) {
     return this.taskService.createTask(body);
   }
