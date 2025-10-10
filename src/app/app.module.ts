@@ -15,9 +15,10 @@ import { AppService } from './app.service';
 import { TasksModule } from 'src/tasks/tasks.module';
 import { UsersModule } from 'src/users/users.module';
 import { LoggerMiddleware } from 'src/common/middlewares/logger.middleware';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports: [TasksModule, UsersModule],
+  imports: [TasksModule, UsersModule, TasksModule, AuthModule],
   controllers: [AppController],
   providers: [AppService],
 })
