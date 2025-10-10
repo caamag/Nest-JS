@@ -62,6 +62,19 @@ export class UsersService {
 
     if (!userSelected) throw new HttpException('Usuário não encontrado.', 404);
 
+    const dataUser: {
+      name?: string;
+      passHash?: string;
+    } = {
+      name: body.name,
+      passHash: body.password,
+    };
+
+    if (body.password) {
+      const newPassHash = await this.hashService.hash(body.password);
+      dataUser['name'] = newPassHash;
+    }
+
     const userUpdated = await this.prisma.user.update({
       where: {
         id: id,
